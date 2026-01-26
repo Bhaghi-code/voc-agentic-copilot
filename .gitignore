@@ -1,0 +1,13 @@
+# Virtual environment
+.venv/
+
+# Secrets
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Logs / OS junk
+*.log
+.DS_Store
