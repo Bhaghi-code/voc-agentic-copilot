@@ -41,6 +41,64 @@ Built with **Streamlit**, **OpenAI embeddings**, and **Supabase Postgres + pgvec
    - Weekly Brief: LLM summarizes into PM-friendly weekly format
 4. **Export**: ReportLab generates PDFs from text (no raw JSON dumps)
 
+## 🗄️ Database Function (Supabase)
+
+```sql
+create or replace function public.match_feedback (
+  query_embedding vector(1536),
+  match_count int default 5,
+  country_filter text default null,
+  platform_filter text default null,
+  min_rating int default null
+)
+returns table (
+  id bigint,
+  content text,
+  country text,
+  platform text,
+  rating int,
+  similarity float
+)
+language sql stable
+as $$
+  select
+    f.id,
+    f.text as content,
+    f.country,
+    f.platform,
+    f.rating,
+    1 - (f.embedding <=> query_embedding) as similarity
+  from public.feedback f
+  where
+    (country_filter is null or f.country = country_filter)
+    and (platform_filter is null or f.platform = platform_filter)
+    and (min_rating is null or f.rating >= min_rating)
+  order by f.embedding <=> query_embedding
+  limit match_count;
+$$;
+
+
+```md
+## 🗄️ Database Function (Supabase)
+
+```text
+
+voc-agentic-copilot/
+  app/
+    app.py                  # Streamlit UI
+  scripts/
+    ingest_feedback.py      # CSV → embeddings → Supabase
+    search_feedback.py      # query → embedding → match_feedback()
+    pm_agent.py             # agentic analysis (LLM)
+    weekly_pm_brief.py      # weekly brief generator (LLM)
+  data/
+    feedback_seed.csv       # seed data
+  requirements.txt
+  .env.example
+
+
+
+
 ### Diagram (ASCII)
 ```text
                 ┌───────────────────────────┐
@@ -67,3 +125,7 @@ Built with **Streamlit**, **OpenAI embeddings**, and **Supabase Postgres + pgvec
 │ - weekly PM brief          │────────► weekly_pm_brief.py (LLM)
 │ - PDF export (ReportLab)   │
 └───────────────────────────┘
+
+
+
+
