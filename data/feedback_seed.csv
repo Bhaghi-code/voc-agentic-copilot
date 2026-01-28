@@ -1,0 +1,8 @@
+source,country,platform,rating,user_type,created_at,text
+app_store,US,iOS,2,consumer,2024-10-12,"Checkout freezes after tapping Pay Now"
+app_store,UK,Android,1,consumer,2024-10-15,"Payment fails with no error message"
+app_store,US,iOS,4,consumer,2024-10-18,"App is good but checkout feels slow"
+play_store,IN,Android,2,consumer,2024-11-02,"Order placed but confirmation screen never loads"
+app_store,CA,iOS,3,consumer,2024-11-05,"Cart works fine but payment UI is confusing"
+internal_survey,US,Web,1,enterprise,2024-11-10,"High checkout drop-offs during peak hours"
+internal_survey,DE,Web,2,enterprise,2024-11-12,"Latency issues when processing payments"
