@@ -42,6 +42,39 @@ Built with **Streamlit**, **OpenAI embeddings**, and **Supabase Postgres + pgvec
 4. **Export**: ReportLab generates PDFs from text (no raw JSON dumps)
 
 ## 🗄️ Database Function (Supabase)
+🗄️ Supabase Setup SQL (Schema + Indexes)
+
+```sql
+-- 1. Enable vector extension (needed for embeddings)
+create extension if not exists vector;
+
+-- 2. Create feedback table (Voice of Customer data)
+create table if not exists public.feedback (
+  id bigserial primary key,
+  source text not null default 'app_reviews',
+  country text,
+  platform text,
+  rating int,
+  user_type text,
+  created_at date,
+  text text not null,
+  embedding vector(1536)
+);
+
+-- 3. Indexes for fast filtering
+create index if not exists feedback_created_at_idx on public.feedback (created_at);
+create index if not exists feedback_country_idx on public.feedback (country);
+create index if not exists feedback_platform_idx on public.feedback (platform);
+
+-- 4. Vector index for semantic search
+create index if not exists feedback_embedding_idx
+on public.feedback
+using ivfflat (embedding vector_cosine_ops)
+with (lists = 100);
+
+```
+
+🧠 Supabase Retrieval Function (match_feedback)
 
 ```sql
 create or replace function public.match_feedback (
@@ -78,8 +111,9 @@ as $$
 $$;
 
 
-```md
-## 🗄️ Database Function (Supabase)
+```
+
+## 🧩 Repo Structure
 
 ```text
 
@@ -90,16 +124,48 @@ voc-agentic-copilot/
     ingest_feedback.py      # CSV → embeddings → Supabase
     search_feedback.py      # query → embedding → match_feedback()
     pm_agent.py             # agentic analysis (LLM)
-    weekly_pm_brief.py      # weekly brief generator (LLM)
+    weekly_pm_brief.py      # weekly PM brief generator (LLM)
   data/
-    feedback_seed.csv       # seed data
+    feedback_seed.csv       # seed feedback
   requirements.txt
   .env.example
 
+```
 
+## ⚙️ Setup
+Dependencies
 
+```bash
 
-### Diagram (ASCII)
+pip install -r requirements.txt
+pip install streamlit-lottie requests
+
+```
+
+Environment configuration
+
+```bash
+
+cp .env.example .env
+OPENAI_API_KEY=...
+OPENAI_EMBED_MODEL=text-embedding-3-small
+SUPABASE_DB_URL=postgresql://...
+
+```
+
+## 🛡️ Responsible AI Guardrails
+
+* All analysis is grounded in retrieved evidence
+* No raw JSON or hidden prompts in PDFs
+* Filters applied at retrieval time (platform, country, rating)
+
+## 🗺️ Roadmap
+
+* Theme clustering & trend analysis
+* Time-series VOC insights
+* Jira ticket auto-creation
+
+### Diagram
 ```text
                 ┌───────────────────────────┐
                 │      feedback_seed.csv     │
