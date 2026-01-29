@@ -1,7 +1,14 @@
 # ✨ Customer Feedback Intelligence Copilot
 **Agentic RAG → Evidence → Analysis → Jira-ready drafts**
 
-A demo app that turns Voice-of-Customer feedback into:
+### 🎬 Product Demo
+
+[![Watch the demo](https://img.youtube.com/vi/09MXo9UeQpw.jpg)](https://youtu.be/09MXo9UeQpw))
+
+▶️ Click to watch a short demo showing how Customer Feedback Intelligence Copilot turns raw Voice-of-Customer feedback into retrieved evidence, agentic analysis, and PM-ready outputs.
+
+
+An app that turns Voice-of-Customer feedback into:
 1) **retrieved evidence** (via embeddings + pgvector),
 2) **grounded agentic analysis**, and
 3) a **Weekly PM Brief** you can export to PDF.
